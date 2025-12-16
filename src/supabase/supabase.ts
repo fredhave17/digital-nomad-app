@@ -1,0 +1,25 @@
+import { createClient } from "@supabase/supabase-js";
+import "expo-sqlite/localStorage/install";
+import { Database } from "./types";
+
+function getSupabaseEnvs(): { url: string; anonKey: string } {
+  const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!url || !anonKey) {
+    throw new Error("Supabase environment variables are not set");
+  }
+
+  return { url, anonKey };
+}
+
+const envs = getSupabaseEnvs();
+
+export const supabase = createClient<Database>(envs.url, envs.anonKey, {
+  auth: {
+    storage: localStorage,
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
+  },
+});
