@@ -1,8 +1,11 @@
-import { CityFilters, supabaseService } from "../supabase/supabaseService";
-import { useFetchData } from "./useFetchData";
+import { useAppQuery } from "../infra/operations/useAppQuery";
+import {
+  CityFilters,
+  supabaseService,
+} from "../infra/repositories/adapterts/supabase/supabaseCityRepo";
 
 export function useCities(filters: CityFilters) {
-  return useFetchData(
+  return useAppQuery(
     () => supabaseService.findAll(filters),
     [filters.name, filters.categoryId]
   );
