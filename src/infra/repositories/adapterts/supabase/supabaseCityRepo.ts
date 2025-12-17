@@ -1,4 +1,6 @@
-import { Category, CategoryCode, CityPreview } from "../types";
+import { Category, CategoryCode } from "@/src/domain/catergory/Catergory";
+import { City, CityPreview } from "@/src/domain/city/City";
+import { ICityRepo } from "@/src/domain/city/ICityRepo";
 import { supabase } from "./supabase";
 import { supabaseAdapter } from "./supabaseAdapter";
 
@@ -55,7 +57,7 @@ async function listCategory(): Promise<Category[]> {
   }));
 }
 
-async function findById(id: string): Promise<CityPreview> {
+async function findById(id: string): Promise<City> {
   const { data, error } = await supabase
     .from("cities_with_full_info")
     .select("*")
@@ -79,9 +81,8 @@ async function getRelatedCities(cityId: string): Promise<CityPreview[]> {
   return data.map(supabaseAdapter.toCityPreview);
 }
 
-export const supabaseService = {
+export const SupabaseCityRepo: ICityRepo = {
   findAll,
-  listCategory,
   findById,
   getRelatedCities,
 };
