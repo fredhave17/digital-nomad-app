@@ -1,7 +1,11 @@
-import { ConsoleFeedback } from "@/src/infra/feedbackService/adapterts/Console/ConsoleFeedback";
+import { AuthProvider } from "@/src/domain/auth/AuthContext";
+import { Toast } from "@/src/infra/feedbackService/adapterts/Toast/Toast";
+import { ToastFeedback } from "@/src/infra/feedbackService/adapterts/Toast/ToastFeedback";
 import { FeedbackProvider } from "@/src/infra/feedbackService/IFeedbackProvider";
 import { InMemoryRepository } from "@/src/infra/repositories/adapterts/inMemory";
 import { RepositoryProvider } from "@/src/infra/repositories/RepositoryProvider";
+import { AsyncStorage } from "@/src/infra/storage/adapterts/AsyncStorage";
+import { StorageProvider } from "@/src/infra/storage/StorageContext";
 import theme from "@/src/ui/theme/theme";
 import { ThemeProvider } from "@shopify/restyle";
 import { useFonts } from "expo-font";
@@ -37,23 +41,31 @@ export default function RootLayout() {
   });
 
   return (
-    <FeedbackProvider value={ConsoleFeedback}>
-      <RepositoryProvider value={InMemoryRepository}>
-        <ThemeProvider theme={theme}>
-          <Stack
-            screenOptions={{
-              contentStyle: { backgroundColor: theme.colors.background },
-              headerShown: false,
-              fullScreenGestureEnabled: true,
-            }}
-          >
-            <Stack.Screen name="(protected)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-            <Stack.Screen name="sign-in" />
-          </Stack>
-          <StatusBar style="light" />
-        </ThemeProvider>
-      </RepositoryProvider>
-    </FeedbackProvider>
+    <StorageProvider storage={AsyncStorage}>
+      <AuthProvider>
+        <FeedbackProvider value={ToastFeedback}>
+          <RepositoryProvider value={InMemoryRepository}>
+            <ThemeProvider theme={theme}>
+              <Stack
+                screenOptions={{
+                  contentStyle: { backgroundColor: theme.colors.background },
+                  headerShown: false,
+                  fullScreenGestureEnabled: true,
+                }}
+              >
+                <Stack.Screen
+                  name="(protected)"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen name="+not-found" />
+                <Stack.Screen name="sign-in" />
+              </Stack>
+              <StatusBar style="light" />
+              <Toast />
+            </ThemeProvider>
+          </RepositoryProvider>
+        </FeedbackProvider>
+      </AuthProvider>
+    </StorageProvider>
   );
 }
